@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -78,6 +81,8 @@ type State struct {
 
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
+
+	EthRpc string
 }
 
 // Copy makes a copy of the State for mutating.
@@ -102,6 +107,8 @@ func (state State) Copy() State {
 		AppHash: state.AppHash,
 
 		LastResultsHash: state.LastResultsHash,
+
+		EthRpc: state.EthRpc,
 	}
 }
 
@@ -171,6 +178,7 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.LastResultsHash = state.LastResultsHash
 	sm.AppHash = state.AppHash
 
+	sm.EthRpc = state.EthRpc
 	return sm, nil
 }
 
@@ -221,6 +229,7 @@ func FromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
+	state.EthRpc = pb.EthRpc
 
 	return state, nil
 }
@@ -239,7 +248,8 @@ func (state State) MakeBlock(
 	proposerAddress []byte,
 ) (*types.Block, *types.PartSet) {
 	// Build base block with block data.
-	block := types.MakeBlock(height, txs, commit, evidence)
+	eth_block_number, _ := getEthBlockNumber(state.EthRpc)
+	block := types.MakeBlock(height, txs, commit, evidence, eth_block_number)
 
 	// Set time.
 	var timestamp time.Time
@@ -259,6 +269,23 @@ func (state State) MakeBlock(
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
+}
+
+func getEthBlockNumber(rpc string) (int64, error) {
+
+	resp, err := http.Get(rpc)
+	if err != nil {
+		return 0, err
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+	bodyStr := string(body[:])
+	actual, _ := strconv.ParseInt(bodyStr, 10, 0)
+	return int64(actual), nil
 }
 
 // MedianTime computes a median time for a given Commit (based on Timestamp field of votes messages) and the

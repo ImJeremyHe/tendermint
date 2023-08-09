@@ -462,6 +462,7 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
+		EthRpc:                           state.EthRpc,
 	}, nil
 }
 

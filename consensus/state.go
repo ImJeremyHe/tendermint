@@ -1265,7 +1265,6 @@ func (cs *State) defaultDoPrevote(height int64, round int32) {
 		cs.signAddVote(tmproto.PrevoteType, nil, types.PartSetHeader{})
 		return
 	}
-
 	// Validate proposal block
 	err := cs.blockExec.ValidateBlock(cs.state, cs.ProposalBlock)
 	if err != nil {

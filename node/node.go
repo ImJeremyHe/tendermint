@@ -658,7 +658,7 @@ func startStateSync(ssR *statesync.Reactor, bcR fastSyncReactor, conR *cs.Reacto
 		defer cancel()
 		stateProvider, err = statesync.NewLightClientStateProvider(
 			ctx,
-			state.ChainID, state.Version, state.InitialHeight,
+			state.ChainID, state.Version, state.InitialHeight, state.EthRpc,
 			config.RPCServers, light.TrustOptions{
 				Period: config.TrustPeriod,
 				Height: config.TrustHeight,
@@ -782,6 +782,7 @@ func NewNode(config *cfg.Config,
 		// Handshake, and may have other modifications as well (ie. depending on
 		// what happened during block replay).
 		state, err = stateStore.Load()
+		state.EthRpc = config.Consensus.EthRpc
 		if err != nil {
 			return nil, fmt.Errorf("cannot load state: %w", err)
 		}

@@ -948,7 +948,8 @@ type ConsensusConfig struct {
 	PeerGossipSleepDuration     time.Duration `mapstructure:"peer_gossip_sleep_duration"`
 	PeerQueryMaj23SleepDuration time.Duration `mapstructure:"peer_query_maj23_sleep_duration"`
 
-	DoubleSignCheckHeight int64 `mapstructure:"double_sign_check_height"`
+	DoubleSignCheckHeight int64  `mapstructure:"double_sign_check_height"`
+	EthRpc                string `mapstructure:"eth_rpc"`
 }
 
 // DefaultConsensusConfig returns a default configuration for the consensus service
@@ -968,6 +969,7 @@ func DefaultConsensusConfig() *ConsensusConfig {
 		PeerGossipSleepDuration:     100 * time.Millisecond,
 		PeerQueryMaj23SleepDuration: 2000 * time.Millisecond,
 		DoubleSignCheckHeight:       int64(0),
+		EthRpc:                      "http://127.0.0.1:8545/10000",
 	}
 }
 

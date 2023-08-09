@@ -84,6 +84,7 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 		// immutable fields
 		ChainID:       invalidState.ChainID,
 		InitialHeight: invalidState.InitialHeight,
+		EthRpc:        invalidState.EthRpc,
 
 		LastBlockHeight: rollbackBlock.Header.Height,
 		LastBlockID:     rollbackBlock.BlockID,

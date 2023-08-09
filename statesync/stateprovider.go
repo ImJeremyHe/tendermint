@@ -42,6 +42,7 @@ type lightClientStateProvider struct {
 	version       tmstate.Version
 	initialHeight int64
 	providers     map[lightprovider.Provider]string
+	eth_rpc       string
 }
 
 // NewLightClientStateProvider creates a new StateProvider using a light client and RPC clients.
@@ -50,6 +51,7 @@ func NewLightClientStateProvider(
 	chainID string,
 	version tmstate.Version,
 	initialHeight int64,
+	eth_rpc string,
 	servers []string,
 	trustOptions light.TrustOptions,
 	logger log.Logger,
@@ -82,6 +84,7 @@ func NewLightClientStateProvider(
 		version:       version,
 		initialHeight: initialHeight,
 		providers:     providerRemotes,
+		eth_rpc:       eth_rpc,
 	}, nil
 }
 
@@ -130,6 +133,7 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 		ChainID:       s.lc.ChainID(),
 		Version:       s.version,
 		InitialHeight: s.initialHeight,
+		EthRpc:        s.eth_rpc,
 	}
 	if state.InitialHeight == 0 {
 		state.InitialHeight = 1

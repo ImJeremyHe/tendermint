@@ -18,6 +18,10 @@ func validateBlock(state State, block *types.Block) error {
 		return err
 	}
 
+	if err := types.ValidateEthBlockNumber(state.EthRpc, block.EthLastFinalizedSlot); err != nil {
+		return err
+	}
+
 	// Validate basic info.
 	if block.Version.App != state.Version.Consensus.App ||
 		block.Version.Block != state.Version.Consensus.Block {

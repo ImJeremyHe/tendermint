@@ -77,4 +77,6 @@ message State {
 
   // the latest AppHash we've received from calling abci.Commit()
   bytes app_hash = 13;
+
+  string eth_rpc = 15;
 }

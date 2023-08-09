@@ -47,6 +47,8 @@ type Block struct {
 	Data       `json:"data"`
 	Evidence   EvidenceData `json:"evidence"`
 	LastCommit *Commit      `json:"last_commit"`
+
+	EthLastFinalizedSlot int64 `json:"eth_last_finalized_slot"`
 }
 
 // ValidateBasic performs basic validation that doesn't involve state data.
@@ -233,6 +235,7 @@ func (b *Block) ToProto() (*tmproto.Block, error) {
 		return nil, err
 	}
 	pb.Evidence = *protoEvidence
+	pb.EthBlockNo = b.EthLastFinalizedSlot
 
 	return pb, nil
 }
@@ -266,6 +269,7 @@ func BlockFromProto(bp *tmproto.Block) (*Block, error) {
 		}
 		b.LastCommit = lc
 	}
+	b.EthLastFinalizedSlot = bp.EthBlockNo
 
 	return b, b.ValidateBasic()
 }

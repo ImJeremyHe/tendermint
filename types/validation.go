@@ -2,6 +2,9 @@ package types
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -35,6 +38,25 @@ func ValidateHash(h []byte) error {
 			tmhash.Size,
 			len(h),
 		)
+	}
+	return nil
+}
+
+func ValidateEthBlockNumber(url string, expected int64) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	bodyStr := string(body[:])
+	actual, _ := strconv.ParseInt(bodyStr, 10, 0)
+	if int64(actual) != expected {
+		return fmt.Errorf("expected %d but found %d in eth slot", expected, actual)
 	}
 	return nil
 }
